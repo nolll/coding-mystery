@@ -1,2 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using CodingMystery.TheBeginning.Problem1;
+
+var shreddedPaper = new ShreddedPaper();
+shreddedPaper.Run();
