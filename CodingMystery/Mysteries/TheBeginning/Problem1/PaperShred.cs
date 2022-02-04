@@ -1,4 +1,4 @@
-﻿namespace CodingMystery.TheBeginning.Problem1;
+﻿namespace CodingMystery.Mysteries.TheBeginning.Problem1;
 
 internal class PaperShred
 {
