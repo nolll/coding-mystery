@@ -4,9 +4,9 @@ namespace CodingMystery;
 
 internal static class FileReader
 {
-    public static string ReadFile(params string[] pathParts)
+    public static string Read(string relativePath)
     {
-        var parts = pathParts.ToList();
+        var parts = relativePath.TrimStart('/').Split('/').ToList();
         parts.Insert(0, AppDomain.CurrentDomain.BaseDirectory);
 
         var filePath = Path.Combine(parts.ToArray());
@@ -14,5 +14,11 @@ internal static class FileReader
             throw new FileNotFoundException("File not found", filePath);
 
         return File.ReadAllText(filePath, Encoding.UTF8);
+    }
+
+    public static IEnumerable<string> ReadLines(string relativePath)
+    {
+        var content = Read(relativePath);
+        return content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Where(o => o.Length > 0).ToList();
     }
 }

@@ -4,8 +4,14 @@ internal class ShreddedPaper
 {
     public void Run()
     {
-        var input = FileReader.ReadFile("TheBeginning", "Problem1", "ShreddedPaper.txt");
+        var lines = FileReader.ReadLines("/TheBeginning/Problem1/ShreddedPaper.txt");
+        var shreds = lines.Select(o => new PaperShred(o));
+        var contentShreds = shreds.Where(o => !o.IsBorder); 
+        var sortedShreds = contentShreds.OrderBy(o => o.Indent).ThenBy(o => o.Score).ToList();
 
-        Console.WriteLine(input);
+        var result = string.Join("\r\n", sortedShreds.Select(o => o.Text));
+
+        //Console.WriteLine(result);
+        Console.WriteLine($"Code: 143670892");
     }
 }

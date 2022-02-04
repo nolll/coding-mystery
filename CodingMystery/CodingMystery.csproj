@@ -6,9 +6,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
+	<!-- 
 	<ItemGroup>
 		<None Include="**/*.txt" CopyToOutputDirectory="Always" />
-	</ItemGroup>
+	</ItemGroup> -->
 
 </Project>
