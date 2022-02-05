@@ -2,28 +2,28 @@
 
 namespace CodingMystery.Common.CoordinateSystems;
 
-public class Matrix<T>
+public class Matrix<T> where T : struct
 {
     private readonly T _defaultValue;
     private readonly IList<IList<T>> _matrix;
     public MatrixDirection Direction { get; private set; }
-    public MatrixCoord Coord { get; private set; }
+    public MatrixCoord CurrentCoord { get; private set; }
     public MatrixCoord StartCoord { get; private set; }
     protected readonly int[] AdjacentDeltas = { -1, 0, 1 };
     public IList<T> Values => _matrix.SelectMany(x => x).ToList();
     public int Height => _matrix.Count;
     public int Width => _matrix.Any() ? _matrix[0].Count : 0;
-    public bool IsAtTop => Coord.Y == 0;
-    public bool IsAtRightEdge => Coord.X == Width - 1;
-    public bool IsAtBottom => Coord.Y == Height - 1;
-    public bool IsAtLeftEdge => Coord.X == 0;
+    public bool IsAtTop => CurrentCoord.Y == 0;
+    public bool IsAtRightEdge => CurrentCoord.X == Width - 1;
+    public bool IsAtBottom => CurrentCoord.Y == Height - 1;
+    public bool IsAtLeftEdge => CurrentCoord.X == 0;
     public MatrixCoord Center => new(Width / 2, Height / 2);
 
     public Matrix(int width = 1, int height = 1, T defaultValue = default)
     {
         _defaultValue = defaultValue;
         _matrix = BuildMatrix(width, height, defaultValue);
-        Coord = new MatrixCoord(0, 0);
+        CurrentCoord = new MatrixCoord(0, 0);
         StartCoord = new MatrixCoord(0, 0);
         Direction = MatrixDirection.Up;
     }
@@ -66,7 +66,7 @@ public class Matrix<T>
 
         var x = coord.X > 0 ? coord.X : 0;
         var y = coord.Y > 0 ? coord.Y : 0;
-        Coord = new MatrixCoord(x, y);
+        CurrentCoord = new MatrixCoord(x, y);
         return true;
     }
 
@@ -92,7 +92,7 @@ public class Matrix<T>
 
     private bool MoveForward(bool extend)
     {
-        return MoveTo(new MatrixCoord(Coord.X + Direction.X, Coord.Y + Direction.Y), extend);
+        return MoveTo(new MatrixCoord(CurrentCoord.X + Direction.X, CurrentCoord.Y + Direction.Y), extend);
     }
 
     public bool TryMoveBackward()
@@ -107,7 +107,7 @@ public class Matrix<T>
 
     private bool MoveBackward(bool extend)
     {
-        return MoveTo(new MatrixCoord(Coord.X - Direction.X, Coord.Y - Direction.Y), extend);
+        return MoveTo(new MatrixCoord(CurrentCoord.X - Direction.X, CurrentCoord.Y - Direction.Y), extend);
     }
 
     public bool TryMoveUp(int steps = 1)
@@ -122,7 +122,7 @@ public class Matrix<T>
 
     private bool MoveUp(int steps, bool extend)
     {
-        return MoveTo(new MatrixCoord(Coord.X, Coord.Y - steps), extend);
+        return MoveTo(new MatrixCoord(CurrentCoord.X, CurrentCoord.Y - steps), extend);
     }
 
     public bool TryMoveRight(int steps = 1)
@@ -137,7 +137,7 @@ public class Matrix<T>
 
     private bool MoveRight(int steps, bool extend)
     {
-        return MoveTo(new MatrixCoord(Coord.X + steps, Coord.Y), extend);
+        return MoveTo(new MatrixCoord(CurrentCoord.X + steps, CurrentCoord.Y), extend);
     }
 
     public bool TryMoveDown(int steps = 1)
@@ -152,7 +152,7 @@ public class Matrix<T>
 
     private bool MoveDown(int steps, bool extend)
     {
-        return MoveTo(new MatrixCoord(Coord.X, Coord.Y + steps), extend);
+        return MoveTo(new MatrixCoord(CurrentCoord.X, CurrentCoord.Y + steps), extend);
     }
 
     public bool TryMoveLeft(int steps = 1)
@@ -167,7 +167,7 @@ public class Matrix<T>
 
     private bool MoveLeft(int steps, bool extend)
     {
-        return MoveTo(new MatrixCoord(Coord.X - steps, Coord.Y), extend);
+        return MoveTo(new MatrixCoord(CurrentCoord.X - steps, CurrentCoord.Y), extend);
     }
 
     public MatrixDirection TurnLeft()
@@ -207,7 +207,7 @@ public class Matrix<T>
             var x = 0;
             foreach (var o in row)
             {
-                if (markCurrentAddress && x == Coord.X && y == Coord.Y)
+                if (markCurrentAddress && x == CurrentCoord.X && y == CurrentCoord.Y)
                     sb.Append('D');
                 else if (markStartAddress && x == StartCoord.X && y == StartCoord.Y)
                     sb.Append('S');
@@ -229,7 +229,7 @@ public class Matrix<T>
 
     public T ReadValue()
     {
-        return ReadValueAt(Coord.X, Coord.Y);
+        return ReadValueAt(CurrentCoord.X, CurrentCoord.Y);
     }
 
     public T ReadValueAt(MatrixCoord coord)
@@ -244,7 +244,7 @@ public class Matrix<T>
 
     public void WriteValue(T value)
     {
-        _matrix[Coord.Y][Coord.X] = value;
+        _matrix[CurrentCoord.Y][CurrentCoord.X] = value;
     }
 
     public IList<MatrixCoord> FindAddresses(T value)
@@ -279,10 +279,10 @@ public class Matrix<T>
     private IEnumerable<MatrixCoord> PossiblePerpendicularAdjacentCoords =>
         new List<MatrixCoord>
         {
-            new MatrixCoord(Coord.X, Coord.Y - 1),
-            new MatrixCoord(Coord.X + 1, Coord.Y),
-            new MatrixCoord(Coord.X, Coord.Y + 1),
-            new MatrixCoord(Coord.X - 1, Coord.Y)
+            new MatrixCoord(CurrentCoord.X, CurrentCoord.Y - 1),
+            new MatrixCoord(CurrentCoord.X + 1, CurrentCoord.Y),
+            new MatrixCoord(CurrentCoord.X, CurrentCoord.Y + 1),
+            new MatrixCoord(CurrentCoord.X - 1, CurrentCoord.Y)
         };
 
     public IList<T> AllAdjacentValues => AllAdjacentCoords.Select(ReadValueAt).ToList();
@@ -296,8 +296,8 @@ public class Matrix<T>
             {
                 foreach (var dx in AdjacentDeltas)
                 {
-                    var coord = new MatrixCoord(Coord.X + dx, Coord.Y - dy);
-                    if (!coord.Equals(Coord))
+                    var coord = new MatrixCoord(CurrentCoord.X + dx, CurrentCoord.Y - dy);
+                    if (!coord.Equals(CurrentCoord))
                         yield return coord;
                 }
             }
@@ -316,7 +316,7 @@ public class Matrix<T>
             }
         }
 
-        matrix.MoveTo(Coord);
+        matrix.MoveTo(CurrentCoord);
         return matrix;
     }
 
@@ -344,7 +344,7 @@ public class Matrix<T>
         return RotateLeft().RotateLeft().RotateLeft();
     }
 
-    public Matrix<T> Slice(MatrixCoord from = null, MatrixCoord to = null)
+    public Matrix<T> Slice(MatrixCoord? from = null, MatrixCoord? to = null)
     {
         from ??= new MatrixCoord(0, 0);
         to ??= new MatrixCoord(Width - 1, Height - 1);

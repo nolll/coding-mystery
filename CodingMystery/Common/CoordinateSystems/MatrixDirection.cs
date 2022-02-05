@@ -18,14 +18,14 @@ public class MatrixDirection : IEquatable<MatrixDirection>
     public static readonly MatrixDirection Down = new("down", 0, 1);
     public static readonly MatrixDirection Left = new("left", -1, 0);
 
-    public bool Equals(MatrixDirection other)
+    public bool Equals(MatrixDirection? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Name == other.Name;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
@@ -35,6 +35,6 @@ public class MatrixDirection : IEquatable<MatrixDirection>
 
     public override int GetHashCode()
     {
-        return (Name != null ? Name.GetHashCode() : 0);
+        return Name.GetHashCode();
     }
 }

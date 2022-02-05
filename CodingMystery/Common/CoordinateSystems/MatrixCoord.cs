@@ -5,7 +5,7 @@ namespace CodingMystery.Common.CoordinateSystems;
 [DebuggerDisplay("{X},{Y}")]
 public class MatrixCoord : IEquatable<MatrixCoord>
 {
-    private string _id;
+    private string? _id;
 
     public int X { get; }
     public int Y { get; }
@@ -30,14 +30,14 @@ public class MatrixCoord : IEquatable<MatrixCoord>
         return xDiff + yDiff;
     }
 
-    public bool Equals(MatrixCoord other)
+    public bool Equals(MatrixCoord? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return X == other.X && Y == other.Y;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
